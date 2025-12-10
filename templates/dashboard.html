@@ -3,339 +3,605 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard v2.0</title>
+    <title>Hynex Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-      /* --- LIQUID GLASS THEME --- */
+      /* --- HYNEX THEME (Based on your Dribbble shot) --- */
+      :root {
+        --bg-dark: #0b0c10; /* Deepest background */
+        --bg-card: #12131a; /* Card background */
+        --border-color: #23242e;
+        --text-main: #ffffff;
+        --text-muted: #8e92a4;
+
+        /* Accents */
+        --accent-green: #00e096;
+        --accent-blue: #0095ff;
+        --accent-purple: #885af8;
+        --accent-yellow: #ffb547;
+        --accent-red: #ff3d57;
+      }
+
       body {
-        background-color: #000;
-        color: #eee;
-        font-family: "Segoe UI", sans-serif;
-        min-height: 100vh;
-        position: relative;
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: "Inter", sans-serif;
         overflow-x: hidden;
       }
-      .bg-blob {
+
+      /* --- LAYOUT --- */
+      .wrapper {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background-color: var(--bg-card);
+        border-right: 1px solid var(--border-color);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
         position: fixed;
-        border-radius: 50%;
-        filter: blur(80px);
-        z-index: -1;
-        opacity: 0.6;
-      }
-      .blob-1 {
-        top: -10%;
-        left: -10%;
-        width: 500px;
-        height: 500px;
-        background: #560bad;
-      }
-      .blob-2 {
-        bottom: -10%;
-        right: -10%;
-        width: 400px;
-        height: 400px;
-        background: #3f37c9;
+        height: 100vh;
+        z-index: 100;
       }
 
-      .glass-panel {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-      }
-
-      /* --- MIC BUTTON --- */
-      .mic-btn {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        border: none;
-        background: linear-gradient(135deg, #f72585, #7209b7);
-        color: white;
-        font-size: 2rem;
-        box-shadow: 0 0 20px rgba(247, 37, 133, 0.5);
-        transition: all 0.2s ease;
+      .nav-item {
+        padding: 12px 16px;
+        color: var(--text-muted);
+        text-decoration: none;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 12px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        transition: 0.2s;
+        font-weight: 500;
         cursor: pointer;
-        z-index: 10; /* Ensure it's on top */
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-main);
+      }
+      .nav-item.active {
+        border-left: 3px solid var(--accent-green);
+        background: linear-gradient(
+          90deg,
+          rgba(0, 224, 150, 0.1) 0%,
+          rgba(0, 0, 0, 0) 100%
+        );
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 250px;
+        padding: 30px;
+        width: calc(100% - 250px);
+      }
+
+      /* --- COMPONENTS --- */
+      .h-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        height: 100%;
+        position: relative;
+      }
+
+      /* Metric Value - FIXED TRUNCATION */
+      .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        line-height: 1.2;
+        /* Allow wrapping if needed, never hide with ... */
+        white-space: normal;
+        overflow: visible;
+        word-break: break-word;
+      }
+
+      .metric-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+      }
+
+      /* Credit Card Visual */
+      .credit-card {
+        background: linear-gradient(135deg, #23242e 0%, #000000 100%);
+        border-radius: 20px;
+        padding: 25px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .credit-card::after {
+        content: "";
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        background: var(--accent-green);
+        filter: blur(80px);
+        opacity: 0.2;
+      }
+
+      /* Mic Button */
+      .mic-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
       }
       .mic-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 30px rgba(247, 37, 133, 0.8);
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .mic-active {
+        background: rgba(255, 61, 87, 0.1) !important;
+        border-color: var(--accent-red) !important;
+        color: var(--accent-red) !important;
+        box-shadow: 0 0 15px rgba(255, 61, 87, 0.2);
       }
 
-      /* ACTIVE STATE (LISTENING) - Added !important to force change */
-      .mic-btn.listening {
-        background: #ff0000 !important; /* Bright Red */
-        box-shadow: 0 0 50px #ff0000 !important;
-        animation: pulse-red 1.5s infinite;
+      /* Tables */
+      .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+      }
+      .custom-table th {
+        color: var(--text-muted);
+        font-weight: 500;
+        text-align: left;
+        padding: 10px;
+        font-size: 0.85rem;
+      }
+      .custom-table td {
+        background: #16171f;
+        padding: 16px;
+        border: none;
+        font-size: 0.95rem;
+        vertical-align: middle;
+      }
+      .custom-table td:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+      }
+      .custom-table td:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
       }
 
-      @keyframes pulse-red {
-        0% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+      /* Views */
+      .view-section {
+        display: none;
+      }
+      .view-section.active {
+        display: block;
+        animation: fadeUp 0.4s ease;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
         }
-        70% {
-          transform: scale(1.1);
-          box-shadow: 0 0 0 20px rgba(255, 0, 0, 0);
-        }
-        100% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
       }
 
-      /* --- SUMMARY CARDS --- */
-      .summary-card {
-        padding: 1.5rem;
-        border-radius: 15px;
-        text-align: center;
-      }
-      .card-income {
-        background: rgba(16, 185, 129, 0.2);
-        border: 1px solid rgba(16, 185, 129, 0.4);
-      }
-      .card-expense {
-        background: rgba(244, 63, 94, 0.2);
-        border: 1px solid rgba(244, 63, 94, 0.4);
-      }
-      .card-balance {
-        background: rgba(59, 130, 246, 0.2);
-        border: 1px solid rgba(59, 130, 246, 0.4);
-      }
-      .amount-text {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-top: 5px;
-      }
-
-      /* --- FORM ELEMENTS --- */
+      /* Form Controls */
       .form-control,
       .form-select {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
+        background-color: #0b0c10 !important;
+        border: 1px solid var(--border-color) !important;
+        color: white !important;
+        padding: 12px;
+        border-radius: 10px;
       }
-      .form-control:focus,
-      .form-select:focus {
-        background: rgba(0, 0, 0, 0.6);
-        color: white;
-        border-color: #4cc9f0;
+      .form-control:focus {
+        border-color: var(--accent-blue) !important;
         box-shadow: none;
-      }
-      .list-group-item {
-        background: rgba(255, 255, 255, 0.05);
-        border: none;
-        color: #ddd;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        margin-bottom: 5px;
-        border-radius: 8px !important;
-      }
-
-      /* --- MODAL --- */
-      .modal-content {
-        background: #1a1a2e;
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .modal-header,
-      .modal-footer {
-        border-color: rgba(255, 255, 255, 0.1);
-      }
-      .btn-close {
-        filter: invert(1);
       }
     </style>
   </head>
   <body>
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
+    <div class="wrapper">
+      <nav class="sidebar">
+        <div class="mb-5 px-2 d-flex align-items-center gap-3">
+          <div
+            style="
+              width: 32px;
+              height: 32px;
+              background: var(--accent-green);
+              border-radius: 8px;
+              display: grid;
+              place-items: center;
+              color: black;
+              font-weight: bold;
+            "
+          >
+            H
+          </div>
+          <h4 class="m-0 fw-bold">Hynex</h4>
+        </div>
 
-    <div class="container mt-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">
-          Hi, <span style="color: #4cc9f0">{{ user.username }}</span>
-        </h2>
-        <a href="/logout" class="btn btn-outline-danger px-4 rounded-pill"
-          >Logout</a
-        >
-      </div>
-
-      <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-          <div class="summary-card card-income">
-            <div class="text-success small">INCOME</div>
-            <div class="amount-text text-success" id="total-income">$0.00</div>
+        <div class="d-flex flex-column gap-1">
+          <div
+            class="nav-item active"
+            onclick="switchView('overview')"
+            id="nav-overview"
+          >
+            <i class="bi bi-grid-fill"></i> Overview
+          </div>
+          <div class="nav-item" onclick="switchView('health')" id="nav-health">
+            <i class="bi bi-heart-pulse-fill"></i> Health Wallet
+          </div>
+          <div
+            class="nav-item"
+            onclick="switchView('insurance')"
+            id="nav-insurance"
+          >
+            <i class="bi bi-shield-lock-fill"></i> Insurance
+          </div>
+          <div
+            class="nav-item"
+            onclick="switchView('transactions')"
+            id="nav-transactions"
+          >
+            <i class="bi bi-list-ul"></i> Transactions
           </div>
         </div>
-        <div class="col-md-4 mb-3">
-          <div class="summary-card card-expense">
-            <div class="text-danger small">EXPENSE</div>
-            <div class="amount-text text-danger" id="total-expense">$0.00</div>
+
+        <div style="margin-top: auto">
+          <a href="/logout" class="nav-item text-danger"
+            ><i class="bi bi-box-arrow-right"></i> Logout</a
+          >
+        </div>
+      </nav>
+
+      <main class="main-content">
+        <header class="d-flex justify-content-between align-items-center mb-5">
+          <div>
+            <h3 class="fw-bold m-0" id="page-title">Dashboard</h3>
+            <small class="text-muted">Welcome back, {{ user.username }}</small>
           </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div class="summary-card card-balance">
-            <div class="text-info small">NET BALANCE</div>
-            <div class="amount-text text-white" id="net-balance">$0.00</div>
+
+          <div class="d-flex gap-3 align-items-center">
+            <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+              <i class="bi bi-mic-fill" id="micIcon"></i>
+              <span id="micText">Voice Log</span>
+            </button>
           </div>
-        </div>
-      </div>
+        </header>
 
-      <div class="glass-panel text-center">
-        <h4 class="mb-3">🎙️ Voice Log</h4>
-        <p class="text-white-50 mb-3">
-          Tap mic to toggle. Say: <i>"Spent 50 on Food"</i>
-        </p>
+        <div id="mic-status-msg" class="alert alert-danger d-none mb-4"></div>
 
-        <div class="d-flex justify-content-center mb-3">
-          <button id="mic" class="mic-btn" onclick="toggleMic()">
-            <span id="mic-icon">🎙️</span>
-          </button>
-        </div>
-        <p id="status" class="fw-bold text-info" style="min-height: 24px">
-          Click mic to start
-        </p>
+        <div id="view-overview" class="view-section active">
+          <div class="row g-4">
+            <div class="col-lg-8">
+              <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                  <div
+                    class="credit-card h-100 d-flex flex-column justify-content-between"
+                  >
+                    <div class="d-flex justify-content-between">
+                      <i class="bi bi-credit-card-2-front text-white fs-4"></i>
+                      <i class="bi bi-wifi text-muted"></i>
+                    </div>
+                    <div class="my-4">
+                      <small
+                        class="text-muted text-uppercase"
+                        style="letter-spacing: 1px"
+                        >Total Balance</small
+                      >
+                      <div class="metric-value mt-1" id="card-balance">
+                        $0.00
+                      </div>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <span class="text-white fw-bold">**** 4288</span>
+                      <span
+                        class="badge bg-success bg-opacity-20 text-success rounded-pill px-3"
+                        >Active</span
+                      >
+                    </div>
+                  </div>
+                </div>
 
-        <button
-          class="btn btn-sm btn-outline-light mt-3"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#manualForm"
-        >
-          Manual Entry
-        </button>
+                <div class="col-md-3">
+                  <div class="h-card d-flex flex-column justify-content-center">
+                    <div class="metric-label">Income</div>
+                    <div
+                      class="metric-value text-success"
+                      style="font-size: 1.5rem"
+                      id="dash-income"
+                    >
+                      $0.00
+                    </div>
+                    <small class="text-muted mt-2"
+                      ><i class="bi bi-arrow-up"></i> Inflow</small
+                    >
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="h-card d-flex flex-column justify-content-center">
+                    <div class="metric-label">Expense</div>
+                    <div
+                      class="metric-value text-danger"
+                      style="font-size: 1.5rem"
+                      id="dash-expense"
+                    >
+                      $0.00
+                    </div>
+                    <small class="text-muted mt-2"
+                      ><i class="bi bi-arrow-down"></i> Outflow</small
+                    >
+                  </div>
+                </div>
+              </div>
 
-        <div class="collapse mt-3" id="manualForm">
-          <div class="card card-body bg-transparent border border-secondary">
-            <form id="addForm" class="row g-2">
-              <div class="col-4">
-                <select class="form-select" id="mType">
-                  <option value="Expense">Expense</option>
-                  <option value="Income">Income</option>
-                </select>
+              <div class="h-card">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-4"
+                >
+                  <h5 class="fw-bold m-0">Recent Activity</h5>
+                  <button
+                    class="btn btn-sm btn-link text-muted text-decoration-none"
+                    onclick="switchView('transactions')"
+                  >
+                    See All
+                  </button>
+                </div>
+                <table class="custom-table">
+                  <tbody id="dash-table-body"></tbody>
+                </table>
               </div>
-              <div class="col-4">
-                <input
-                  type="number"
-                  step="0.01"
-                  class="form-control"
-                  id="mAmount"
-                  placeholder="Amount"
-                  required
-                />
-              </div>
-              <div class="col-4">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="mCategory"
-                  placeholder="Category"
-                  value="General"
-                />
-              </div>
-              <div class="col-12">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="mDesc"
-                  placeholder="Description (e.g. Lunch)"
-                  required
-                />
-              </div>
-              <div class="col-12 mt-2">
-                <button type="submit" class="btn btn-primary w-100">
-                  Add Transaction
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+            </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-4">
-          <div class="glass-panel h-100">
-            <h5 class="mb-4 text-center">Expense Breakdown</h5>
-            <div style="height: 300px; display: flex; justify-content: center">
-              <canvas id="chart"></canvas>
+            <div class="col-lg-4">
+              <div class="h-card">
+                <h5 class="fw-bold mb-4">Spending Split</h5>
+                <div style="height: 260px; position: relative">
+                  <canvas id="mainChart"></canvas>
+                </div>
+                <div class="mt-4 text-center">
+                  <button
+                    class="btn btn-primary w-100 rounded-pill py-2 fw-bold"
+                    data-bs-toggle="modal"
+                    data-bs-target="#manualModal"
+                  >
+                    + Add Transaction
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-6 mb-4">
-          <div class="glass-panel h-100">
-            <h5 class="mb-4">Recent Transactions</h5>
-            <div
-              style="max-height: 350px; overflow-y: auto"
-              id="list-container"
-            >
-              <ul id="list" class="list-group list-group-flush"></ul>
+
+        <div id="view-health" class="view-section">
+          <div class="row g-4">
+            <div class="col-lg-8">
+              <div
+                class="h-card mb-4"
+                style="
+                  background: radial-gradient(
+                    circle at top right,
+                    #004d40 0%,
+                    #12131a 60%
+                  );
+                "
+              >
+                <div class="d-flex gap-3 align-items-center mb-3">
+                  <div
+                    style="
+                      padding: 8px;
+                      background: rgba(0, 224, 150, 0.2);
+                      color: var(--accent-green);
+                      border-radius: 8px;
+                    "
+                  >
+                    <i class="bi bi-heart-pulse-fill"></i>
+                  </div>
+                  <h4 class="m-0 fw-bold">Health Wallet</h4>
+                </div>
+                <div class="metric-value mb-2" id="health-total">$0.00</div>
+                <p class="text-muted small">
+                  Total allocated for medical expenses
+                </p>
+              </div>
+
+              <div class="h-card">
+                <h5 class="fw-bold mb-4">Medical Transactions</h5>
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Date</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="health-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div
+                class="h-card text-center d-flex flex-column align-items-center justify-content-center"
+              >
+                <div
+                  style="
+                    width: 120px;
+                    height: 120px;
+                    border-radius: 50%;
+                    border: 8px solid #1e2029;
+                    display: grid;
+                    place-items: center;
+                    position: relative;
+                  "
+                >
+                  <div
+                    id="health-circle"
+                    style="
+                      position: absolute;
+                      inset: -8px;
+                      border-radius: 50%;
+                      border: 8px solid var(--accent-green);
+                      clip-path: inset(0 50% 0 0);
+                    "
+                  ></div>
+                  <span class="h3 fw-bold m-0" id="health-percent">0%</span>
+                </div>
+                <h6 class="mt-4 fw-bold">Health Impact</h6>
+                <small class="text-muted">Percentage of total expenses</small>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        <div id="view-insurance" class="view-section">
+          <div class="row g-4">
+            <div class="col-md-4">
+              <div class="h-card">
+                <i class="bi bi-hospital fs-3 text-success mb-3 d-block"></i>
+                <h5 class="fw-bold">Health Ins.</h5>
+                <h3 class="text-white mt-2 mb-0" id="ins-health-total">
+                  $0.00
+                </h3>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="h-card">
+                <i class="bi bi-car-front fs-3 text-danger mb-3 d-block"></i>
+                <h5 class="fw-bold">Car Ins.</h5>
+                <h3 class="text-white mt-2 mb-0" id="ins-car-total">$0.00</h3>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="h-card">
+                <i
+                  class="bi bi-person-hearts fs-3 text-warning mb-3 d-block"
+                ></i>
+                <h5 class="fw-bold">Life Ins.</h5>
+                <h3 class="text-white mt-2 mb-0" id="ins-life-total">$0.00</h3>
+              </div>
+            </div>
+          </div>
+          <div class="h-card mt-4">
+            <h5 class="fw-bold mb-4">Insurance History</h5>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody id="ins-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="view-transactions" class="view-section">
+          <div class="h-card">
+            <h5 class="fw-bold mb-4">All Transactions</h5>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody id="all-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
     </div>
 
-    <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal fade" id="manualModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Edit Transaction</h5>
+        <div
+          class="modal-content"
+          style="
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+          "
+        >
+          <div class="modal-header border-secondary border-opacity-25">
+            <h5 class="modal-title">Add Transaction</h5>
             <button
               type="button"
-              class="btn-close"
+              class="btn-close btn-close-white"
               data-bs-dismiss="modal"
             ></button>
           </div>
           <div class="modal-body">
-            <input type="hidden" id="editId" />
-            <div class="mb-3">
-              <label>Type</label>
-              <select class="form-select" id="editType">
-                <option value="Expense">Expense</option>
-                <option value="Income">Income</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label>Amount</label
-              ><input
-                type="number"
-                step="0.01"
-                class="form-control"
-                id="editAmount"
-              />
-            </div>
-            <div class="mb-3">
-              <label>Category</label
-              ><input type="text" class="form-control" id="editCategory" />
-            </div>
-            <div class="mb-3">
-              <label>Description</label
-              ><input type="text" class="form-control" id="editDesc" />
-            </div>
-          </div>
-          <div class="modal-footer d-flex justify-content-between">
-            <button
-              type="button"
-              class="btn btn-danger"
-              onclick="deleteTransaction()"
-            >
-              Delete
-            </button>
-            <button type="button" class="btn btn-success" onclick="saveEdit()">
-              Save Changes
-            </button>
+            <form id="addForm">
+              <div class="mb-3">
+                <label class="small text-muted mb-1">Type</label
+                ><select class="form-select" id="mType">
+                  <option value="Expense">Expense</option>
+                  <option value="Income">Income</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="small text-muted mb-1">Amount</label
+                ><input
+                  type="number"
+                  step="0.01"
+                  class="form-control"
+                  id="mAmount"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="small text-muted mb-1">Category</label
+                ><input
+                  type="text"
+                  class="form-control"
+                  id="mCategory"
+                  placeholder="e.g. Food, Salary"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="small text-muted mb-1">Description</label
+                ><input type="text" class="form-control" id="mDesc" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100 fw-bold">
+                Save
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -343,78 +609,79 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // --- GLOBAL VARIABLES ---
+      // --- VARIABLES ---
       let transactions = [];
-      const editModal = new bootstrap.Modal(
-        document.getElementById("editModal")
-      );
-      const micBtn = document.getElementById("mic");
+      const micBtn = document.getElementById("micBtn");
       const micIcon = document.getElementById("mic-icon");
-      const status = document.getElementById("status");
-      let isListening = false;
-      let recognition = null;
+      const micText = document.getElementById("micText");
+      const micMsg = document.getElementById("mic-status-msg");
+      const manualModal = new bootstrap.Modal(
+        document.getElementById("manualModal")
+      );
+      let myChart = null;
 
-      // --- 1. TOGGLE LOGIC ---
+      // --- NAVIGATION ---
+      window.switchView = function (viewName) {
+        document
+          .querySelectorAll(".view-section")
+          .forEach((el) => el.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((el) => el.classList.remove("active"));
+        document.getElementById(`view-${viewName}`).classList.add("active");
+        if (document.getElementById(`nav-${viewName}`))
+          document.getElementById(`nav-${viewName}`).classList.add("active");
+        const titles = {
+          overview: "Dashboard",
+          health: "Health Wallet",
+          insurance: "Insurance Hub",
+          transactions: "All Transactions",
+        };
+        document.getElementById("page-title").innerText = titles[viewName];
+      };
+
+      // --- MIC & VOICE LOGIC ---
+      let recognition = null;
+      let isListening = false;
+
+      // Check Browser Support
       const SpeechRecognition =
         window.SpeechRecognition || window.webkitSpeechRecognition;
 
       if (SpeechRecognition) {
         recognition = new SpeechRecognition();
-        recognition.continuous = false; // Stops automatically after one sentence
+        recognition.continuous = false;
         recognition.lang = "en-US";
 
-        // --- THE TOGGLE FUNCTION ---
         window.toggleMic = function () {
           if (isListening) {
-            // If currently listening, STOP it manually
-            console.log("User clicked stop.");
             recognition.stop();
           } else {
-            // If not listening, START it
-            console.log("User clicked start.");
+            micMsg.classList.add("d-none"); // Hide error msg
             try {
               recognition.start();
             } catch (e) {
-              console.error("Mic start error:", e);
-              // If it was already running but state desynced, stop it first
-              recognition.stop();
+              console.error(e);
             }
           }
         };
 
-        // --- EVENT: STARTED LISTENING ---
         recognition.onstart = () => {
-          console.log("Mic Started");
           isListening = true;
-
-          // VISUAL UPDATES
-          micBtn.classList.add("listening"); // Adds Red Pulse
-          micIcon.innerText = "⏸️"; // Changes to Pause Icon
-
-          status.innerText = "Listening... (Click to Pause)";
-          status.style.color = "#ff4757"; // Red Text
+          micBtn.classList.add("mic-active");
+          micIcon.classList.replace("bi-mic-fill", "bi-soundwave");
+          micText.innerText = "Listening...";
         };
 
-        // --- EVENT: STOPPED LISTENING ---
         recognition.onend = () => {
-          console.log("Mic Stopped");
           isListening = false;
-
-          // VISUAL UPDATES (RESET)
-          micBtn.classList.remove("listening");
-          micIcon.innerText = "🎙️";
-
-          if (!status.innerText.includes("Processing")) {
-            status.innerText = "Click mic to record";
-            status.style.color = "#4cc9f0";
-          }
+          micBtn.classList.remove("mic-active");
+          micIcon.classList.replace("bi-soundwave", "bi-mic-fill");
+          micText.innerText = "Voice Log";
         };
 
-        // --- EVENT: SPEECH DETECTED ---
         recognition.onresult = async (e) => {
           const text = e.results[0][0].transcript;
-          console.log("Heard:", text);
-          status.innerText = `Processing: "${text}"`;
 
           let type = "Expense";
           if (text.toLowerCase().match(/received|income|salary|deposit/))
@@ -423,18 +690,17 @@
           const amount = parseVoiceAmount(text);
 
           let cat = "General";
-          [
-            "food",
-            "travel",
-            "bills",
-            "rent",
-            "shopping",
-            "groceries",
-            "salary",
-          ].forEach((c) => {
-            if (text.toLowerCase().includes(c))
-              cat = c.charAt(0).toUpperCase() + c.slice(1);
-          });
+          const lower = text.toLowerCase();
+          if (
+            lower.includes("health") ||
+            lower.includes("doctor") ||
+            lower.includes("med")
+          )
+            cat = "Health";
+          else if (lower.includes("car insurance")) cat = "Car Insurance";
+          else if (lower.includes("life insurance")) cat = "Life Insurance";
+          else if (lower.includes("insurance")) cat = "Insurance";
+          else if (lower.includes("food")) cat = "Food";
 
           if (amount) {
             await saveTransaction({
@@ -443,88 +709,51 @@
               category: cat,
               description: text,
             });
-            status.innerText = "Saved! Click mic to add another.";
-            status.style.color = "#4cc9f0";
           } else {
-            status.innerText = "❌ No amount heard. Try again.";
+            micMsg.innerText =
+              "Heard you, but couldn't understand the amount. Try saying 'Spent 50 dollars'.";
+            micMsg.classList.remove("d-none");
           }
         };
 
         recognition.onerror = (e) => {
-          console.error("Speech Error:", e.error);
           isListening = false;
-          micBtn.classList.remove("listening");
-          micIcon.innerText = "🎙️";
-          status.innerText = "Error: " + e.error;
+          micBtn.classList.remove("mic-active");
+          console.error(e.error);
+          micMsg.innerText = "Mic Error: " + e.error + " (Check permissions)";
+          micMsg.classList.remove("d-none");
         };
       } else {
-        micBtn.style.display = "none";
-        status.innerText = "Voice not supported in this browser.";
+        micBtn.style.display = "none"; // Hide if not supported
       }
-
-      // --- HELPER: Number Parsing ---
-      const numberWords = {
-        one: 1,
-        two: 2,
-        three: 3,
-        four: 4,
-        five: 5,
-        six: 6,
-        seven: 7,
-        eight: 8,
-        nine: 9,
-        ten: 10,
-        eleven: 11,
-        twelve: 12,
-        thirteen: 13,
-        fourteen: 14,
-        fifteen: 15,
-        sixteen: 16,
-        seventeen: 17,
-        eighteen: 18,
-        nineteen: 19,
-        twenty: 20,
-        thirty: 30,
-        forty: 40,
-        fifty: 50,
-        sixty: 60,
-        seventy: 70,
-        eighty: 80,
-        ninety: 90,
-      };
-      const multipliers = {
-        hundred: 100,
-        thousand: 1000,
-        lakh: 100000,
-        crore: 10000000,
-      };
 
       function parseVoiceAmount(text) {
         const directMatch = text.match(/(\d+(\.\d+)?)/);
         if (directMatch) return parseFloat(directMatch[0]);
-        let cleanText = text
-          .toLowerCase()
-          .replace(/-/g, " ")
-          .replace(/rupees|dollars|rs/g, "");
-        let words = cleanText.split(" ");
-        let total = 0;
-        let current = 0;
-        words.forEach((w) => {
-          if (numberWords[w]) current += numberWords[w];
-          else if (multipliers[w]) {
-            total += (current || 1) * multipliers[w];
-            current = 0;
-          }
-        });
-        return total + current || null;
+        // Simple word map (expand as needed)
+        const map = {
+          one: 1,
+          ten: 10,
+          twenty: 20,
+          fifty: 50,
+          hundred: 100,
+          thousand: 1000,
+        };
+        return null;
       }
 
-      // --- DATA FUNCTIONS ---
+      // --- DATA ---
       async function fetchTransactions() {
-        const res = await fetch("/api/transactions");
-        transactions = await res.json();
-        renderUI();
+        try {
+          const res = await fetch("/api/transactions");
+          if (!res.ok) throw new Error("API Failed");
+          transactions = await res.json();
+          renderUI();
+        } catch (e) {
+          console.error(e);
+        }
       }
+
       async function saveTransaction(data) {
         await fetch("/api/transactions", {
           method: "POST",
@@ -533,6 +762,7 @@
         });
         fetchTransactions();
       }
+
       document.getElementById("addForm").onsubmit = async (e) => {
         e.preventDefault();
         const data = {
@@ -543,54 +773,148 @@
         };
         await saveTransaction(data);
         document.getElementById("addForm").reset();
-        new bootstrap.Collapse(document.getElementById("manualForm")).hide();
+        manualModal.hide();
       };
 
+      // --- RENDER ---
       function renderUI() {
-        const list = document.getElementById("list");
-        list.innerHTML = "";
         let inc = 0,
-          exp = 0,
-          catTotals = {};
+          exp = 0;
+        let healthTotal = 0,
+          insHealth = 0,
+          insCar = 0,
+          insLife = 0;
+        let catTotals = {};
+
+        // DOM
+        const dashBody = document.getElementById("dash-table-body");
+        const healthBody = document.getElementById("health-table-body");
+        const insBody = document.getElementById("ins-table-body");
+        const allBody = document.getElementById("all-table-body");
+
+        // Clear
+        [dashBody, healthBody, insBody, allBody].forEach(
+          (el) => (el.innerHTML = "")
+        );
+
         transactions.forEach((t) => {
           if (t.type === "Income") inc += t.amount;
           else {
             exp += t.amount;
             catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+            // Sub-logic
+            if (
+              ["Health", "Medical", "Doctor", "Pharmacy"].some((k) =>
+                t.category.includes(k)
+              )
+            ) {
+              healthTotal += t.amount;
+              healthBody.innerHTML += `<tr><td class="text-white">${
+                t.description
+              }</td><td class="text-muted">${new Date(
+                t.date
+              ).toLocaleDateString()}</td><td class="text-danger">-$${t.amount.toLocaleString()}</td></tr>`;
+            }
+            if (t.category.includes("Insurance")) {
+              if (t.category.includes("Car")) insCar += t.amount;
+              else if (t.category.includes("Life")) insLife += t.amount;
+              else if (t.category.includes("Health")) insHealth += t.amount;
+              insBody.innerHTML += `<tr><td><span class="badge bg-secondary bg-opacity-25 text-light">${
+                t.category
+              }</span></td><td class="text-muted">${
+                t.description
+              }</td><td class="text-white">$${t.amount.toLocaleString()}</td></tr>`;
+            }
           }
-          const color = t.type === "Income" ? "text-success" : "text-danger";
-          const sign = t.type === "Income" ? "+" : "-";
-          const li = document.createElement("li");
-          li.className =
-            "list-group-item d-flex justify-content-between align-items-center";
-          li.innerHTML = `<div><div class="fw-bold">${
+          // All
+          allBody.innerHTML += `<tr><td><span class="${
+            t.type === "Income" ? "text-success" : "text-danger"
+          }">${t.type}</span></td><td class="text-white">${
             t.description
-          }</div><div class="small text-muted">${new Date(
-            t.date
-          ).toLocaleDateString()} • ${
+          }</td><td class="text-muted">${
             t.category
-          }</div></div><div class="d-flex align-items-center"><span class="fw-bold ${color} me-3">${sign}$${t.amount.toFixed(
-            2
-          )}</span><button class="btn btn-sm btn-outline-secondary" onclick='openEdit(${JSON.stringify(
-            t
-          )})'>✏️</button></div>`;
-          list.appendChild(li);
+          }</td><td class="fw-bold">$${t.amount.toLocaleString()}</td></tr>`;
         });
-        document.getElementById("total-income").innerText = `$${inc.toFixed(
-          2
-        )}`;
-        document.getElementById("total-expense").innerText = `$${exp.toFixed(
-          2
-        )}`;
-        document.getElementById("net-balance").innerText = `$${(
+
+        // Top 5
+        transactions.slice(0, 5).forEach((t) => {
+          dashBody.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width:36px; height:36px; border-radius:10px; background:${
+                              t.type === "Income"
+                                ? "rgba(34,197,94,0.1)"
+                                : "rgba(239,68,68,0.1)"
+                            }; display:grid; place-items:center; color:${
+            t.type === "Income" ? "#22c55e" : "#ef4444"
+          };">
+                                <i class="bi ${
+                                  t.type === "Income"
+                                    ? "bi-arrow-down-left"
+                                    : "bi-arrow-up-right"
+                                }"></i>
+                            </div>
+                            <div>
+                                <div class="fw-medium text-white">${
+                                  t.description
+                                }</div>
+                                <div class="small text-muted" style="font-size:0.75rem">${
+                                  t.category
+                                }</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end fw-bold ${
+                      t.type === "Income" ? "text-success" : "text-white"
+                    }">
+                        ${
+                          t.type === "Income" ? "+" : "-"
+                        }$${t.amount.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+          })}
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Updates
+        document.getElementById("card-balance").innerText = `$${(
           inc - exp
-        ).toFixed(2)}`;
+        ).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+        document.getElementById(
+          "dash-income"
+        ).innerText = `$${inc.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+        })}`;
+        document.getElementById(
+          "dash-expense"
+        ).innerText = `$${exp.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+        })}`;
+
+        document.getElementById(
+          "health-total"
+        ).innerText = `$${healthTotal.toLocaleString()}`;
+        document.getElementById(
+          "ins-health-total"
+        ).innerText = `$${insHealth.toLocaleString()}`;
+        document.getElementById(
+          "ins-car-total"
+        ).innerText = `$${insCar.toLocaleString()}`;
+        document.getElementById(
+          "ins-life-total"
+        ).innerText = `$${insLife.toLocaleString()}`;
+
+        // Health Circle
+        const percent = exp > 0 ? ((healthTotal / exp) * 100).toFixed(0) : 0;
+        document.getElementById("health-percent").innerText = `${percent}%`;
+
         updateChart(catTotals);
       }
 
-      let myChart = null;
       function updateChart(data) {
-        const ctx = document.getElementById("chart");
+        const ctx = document.getElementById("mainChart");
         if (myChart) myChart.destroy();
         myChart = new Chart(ctx, {
           type: "doughnut",
@@ -600,57 +924,36 @@
               {
                 data: Object.values(data),
                 backgroundColor: [
-                  "#4cc9f0",
-                  "#f72585",
-                  "#7209b7",
-                  "#4361ee",
-                  "#4895ef",
+                  "#22c55e",
+                  "#3b82f6",
+                  "#f59e0b",
+                  "#ef4444",
+                  "#8b5cf6",
                 ],
                 borderWidth: 0,
+                hoverOffset: 10,
               },
             ],
           },
           options: {
+            cutout: "75%",
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { position: "bottom", labels: { color: "white" } },
+              legend: {
+                position: "right",
+                labels: {
+                  color: "#888",
+                  font: { family: "Inter", size: 11 },
+                  boxWidth: 10,
+                  usePointStyle: true,
+                },
+              },
             },
           },
         });
       }
 
-      window.openEdit = (t) => {
-        document.getElementById("editId").value = t.id;
-        document.getElementById("editType").value = t.type;
-        document.getElementById("editAmount").value = t.amount;
-        document.getElementById("editCategory").value = t.category;
-        document.getElementById("editDesc").value = t.description;
-        editModal.show();
-      };
-      window.saveEdit = async () => {
-        const id = document.getElementById("editId").value;
-        const data = {
-          type: document.getElementById("editType").value,
-          amount: parseFloat(document.getElementById("editAmount").value),
-          category: document.getElementById("editCategory").value,
-          description: document.getElementById("editDesc").value,
-        };
-        await fetch(`/api/transactions/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        editModal.hide();
-        fetchTransactions();
-      };
-      window.deleteTransaction = async () => {
-        if (!confirm("Are you sure?")) return;
-        const id = document.getElementById("editId").value;
-        await fetch(`/api/transactions/${id}`, { method: "DELETE" });
-        editModal.hide();
-        fetchTransactions();
-      };
       fetchTransactions();
     </script>
   </body>
