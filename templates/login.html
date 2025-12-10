@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Finance Tracker</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- LIQUID GLASS THEME (LOGIN SPECIFIC) --- */
+      body {
+        background-color: #000;
+        color: #fff;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      /* Background Blobs */
+      .blob {
+        position: absolute;
+        filter: blur(80px);
+        z-index: -1;
+        opacity: 0.8;
+        animation: move 10s infinite alternate;
+      }
+      .blob-1 {
+        top: 10%;
+        left: 20%;
+        width: 300px;
+        height: 300px;
+        background: #7b2cbf;
+        border-radius: 40% 60% 70% 30%;
+      }
+      .blob-2 {
+        bottom: 20%;
+        right: 20%;
+        width: 250px;
+        height: 250px;
+        background: #3a0ca3;
+        border-radius: 60% 40% 30% 70%;
+        animation-duration: 12s;
+      }
+      .blob-3 {
+        bottom: 10%;
+        left: 10%;
+        width: 200px;
+        height: 200px;
+        background: #4361ee;
+        border-radius: 30% 70% 70% 30%;
+        animation-duration: 8s;
+      }
+      @keyframes move {
+        from {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        to {
+          transform: translate(20px, -20px) rotate(20deg);
+        }
+      }
+
+      /* Glass Card */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 3rem;
+        width: 100%;
+        max-width: 420px;
+      }
+
+      /* Inputs & Buttons */
+      .form-control {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .form-control:focus {
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border-color: #4361ee;
+        box-shadow: 0 0 10px rgba(67, 97, 238, 0.3);
+      }
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        width: 100%;
+      }
+      .btn-success {
+        background: linear-gradient(135deg, #4cc9f0, #4361ee);
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        width: 100%;
+      }
+
+      /* Tabs */
+      .nav-pills .nav-link {
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+      }
+      .nav-pills .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .alert {
+        background: rgba(255, 0, 0, 0.1);
+        border: 1px solid rgba(255, 0, 0, 0.2);
+        color: #ff6b6b;
+        text-align: center;
+      }
+      .alert-success {
+        background: rgba(0, 255, 0, 0.1);
+        border: 1px solid rgba(0, 255, 0, 0.2);
+        color: #51cf66;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="glass-card">
+      <h3 class="text-center mb-4 fw-bold">
+        Finance<span style="color: #4cc9f0">Flow</span>
+      </h3>
+
+      <ul class="nav nav-pills nav-fill mb-4">
+        <li class="nav-item">
+          <a class="nav-link active" id="tab-login" onclick="toggle('login')"
+            >Login</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="tab-register" onclick="toggle('register')"
+            >Register</a
+          >
+        </li>
+      </ul>
+
+      <form id="loginForm">
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="lUser"
+            placeholder="Username"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="password"
+            class="form-control"
+            id="lPass"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+      </form>
+
+      <form id="regForm" class="d-none">
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="rUser"
+            placeholder="Choose Username"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="password"
+            class="form-control"
+            id="rPass"
+            placeholder="Choose Password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-success">Sign Up</button>
+      </form>
+
+      <div id="alert" class="alert mt-3 d-none"></div>
+    </div>
+
+    <script>
+      function toggle(mode) {
+        document
+          .getElementById("loginForm")
+          .classList.toggle("d-none", mode !== "login");
+        document
+          .getElementById("regForm")
+          .classList.toggle("d-none", mode === "login");
+        document
+          .getElementById("tab-login")
+          .classList.toggle("active", mode === "login");
+        document
+          .getElementById("tab-register")
+          .classList.toggle("active", mode !== "login");
+        document.getElementById("alert").classList.add("d-none");
+      }
+
+      async function post(url, data) {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        return { ok: res.ok, data: await res.json() };
+      }
+
+      document.getElementById("loginForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const res = await post("/login", {
+          username: lUser.value,
+          password: lPass.value,
+        });
+        if (res.ok) window.location.href = "/dashboard"; // Redirect on success
+        else showAlert(res.data.error, "alert");
+      };
+
+      document.getElementById("regForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const res = await post("/register", {
+          username: rUser.value,
+          password: rPass.value,
+        });
+        if (res.ok) {
+          showAlert("Created! Please Login", "alert-success");
+          setTimeout(() => toggle("login"), 1500);
+        } else {
+          showAlert(res.data.error, "alert");
+        }
+      };
+
+      function showAlert(msg, type) {
+        const box = document.getElementById("alert");
+        box.className = `alert mt-3 ${type}`;
+        box.innerText = msg;
+        box.classList.remove("d-none");
+      }
+    </script>
+  </body>
+</html>
